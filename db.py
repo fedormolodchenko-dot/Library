@@ -28,3 +28,6 @@ def create_table():
                       date TEXT NOT NULL)""")
     db_connect.commit()
 create_table()
+
+def connect_db(path):
+    return sqlite3.connect()

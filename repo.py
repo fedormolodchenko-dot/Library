@@ -1,9 +1,19 @@
 import sqlite3
 
-db_connect = sqlite3.connect("library.bd")
-db_cursor = db_connect.cursor()
 
-def add_book():
-    db_cursor.execute("""SELECT title, author, total, free FROM books""")
-    for item in db_cursor.fetchall():
-        if item[0]
+def add_book(connect, title, author, genre, n=1):
+    cursor = connect.Cursor()
+
+    cursor.execute("""SELECT free, total FROM books 
+                   WHERE title == ?, author == ?""",(title, author))
+    s = cursor.fetchall()
+    if s != []:
+        cursor.execute("""UPDATE books
+                       SET free = free + ?, total = total + ?
+                       WHERE title == ?, author == ?""", (n, n, title, author))
+    else:
+        cursor.execute("""INSERT INTO books
+                       (total, free)
+                       VALUES(?,?)""", (n,n))
+    cursor.commit()
+
