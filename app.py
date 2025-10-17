@@ -20,6 +20,19 @@ print("Добавить книгу: 1" \
 "Поиск книг: 13" \
 "" \
 "Что вы хотите сделать? Введите номер запроса: ")
+to_do= int(input())
+if to_do == 1:
+    title= input()
+    author = input()
+    genre = input()
+    want_n = input("Вы хотите добавить одну книгу? (введите yes/no) ")
+    if want_n == "no":
+        n = int(input())
+    else:
+        n = 1
+    
+    repo.add_book(connect, title, author, genre, n)
+
 
 
 
