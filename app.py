@@ -89,8 +89,8 @@ elif to_do == 11:
     print("Просроченные книги:", books)
 
 elif to_do == 12:
-    service.auto_remove_reservation(connect)
-    print("Бронь сброшена")
+   print(service.auto_remove_reservation(connect))
+    
 
 elif to_do == 13:
     title = input("Введите название книги (или Enter для пропуска): ") or None
