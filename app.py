@@ -55,65 +55,78 @@ if to_do == 1:
     else:
         n = 1
     repo.add_book(connect, title, author, genre, n)
+    print("Книга добавлена")
 
 elif to_do == 2:
     title = input("Введите название книги для удаления: ")
     author = input("Введите автора книги для удаления: ")
     repo.remove_book(connect, title, author)
+    print("Книга удалена")
 
 elif to_do == 3:
     full_name = input("Введите ФИО читателя: ")
     phone = input("Введите телефон читателя: ")
     age = int(input("Введите возраст читателя: "))
     repo.add_reader(connect, full_name, phone, age)
+    print("Читатель добавлен")
 
 elif to_do == 4:
     pr = input("Введите идентификатор читателя для удаления: ")
     repo.remove_reader(connect, pr)
+    print("Читатель удален")
 
 elif to_do == 5:
     pr = input("Введите идентификатор читателя: ")
     title = input("Введите название книги: ")
     author = input("Введите автора книги: ")
     service.bron(connect, pr, title, author)
+    print("Книга забронирована")
 
 elif to_do == 6:
     pr = input("Введите идентификатор читателя: ")
     title = input("Введите название книги: ")
     author = input("Введите автора книги: ")
     service.remove_bron(connect, pr, title, author)
+    print("Бронь снята")
 
 elif to_do == 7:
     pr = input("Введите идентификатор читателя: ")
     title = input("Введите название книги: ")
     author = input("Введите автора книги: ")
     service.take_book(connect, pr, title, author)
+    print("Книга выдана")
 
 elif to_do == 8:
     pr = input("Введите идентификатор читателя: ")
     title = input("Введите название книги: ")
     author = input("Введите автора книги: ")
     service.back_book(connect, pr, title, author)
+    print("Книга возвращена")
 
 elif to_do == 9:
     pr = input("Введите идентификатор читателя: ")
-    service.get_taken_books(connect, pr)
+    books = service.get_taken_books(connect, pr)
+    print("Взятые книги:", books)
 
 elif to_do == 10:
     pr = input("Введите идентификатор читателя: ")
-    service.get_reserved_books(connect, pr)
+    books = service.get_reserved_books(connect, pr)
+    print("Забронированные книги:", books)
 
 elif to_do == 11:
-    service.get_overdue_books(connect)
+    books = service.get_overdue_books(connect)
+    print("Просроченные книги:", books)
 
 elif to_do == 12:
     service.auto_remove_reservation(connect)
+    print("Бронь сброшена")
 
 elif to_do == 13:
     title = input("Введите название книги (или Enter для пропуска): ") or None
     author = input("Введите автора книги (или Enter для пропуска): ") or None
     genre = input("Введите жанр книги (или Enter для пропуска): ") or None
-    service.search_books(connect, title, author, genre)
+    books = service.search_books(connect, title, author, genre)
+    print("Найдены книги:", books)
 
 else:
     print("Неверный номер запроса")
