@@ -48,9 +48,14 @@ def take_book(connect, pr, title, author):
     cursor = connect.cursor()
     cursor.execute("""SELECT free, id FROM books
                    WHERE title == ?, author == ?""", (title , author))
-    s = cursor.fetchall()
-    free = s[0]
-    book_id_1 = s[1]
+    
+    book_result = cursor.fetchall()
+    if not book_result:
+        print("Книга не найдена")
+        return
+    book_id = book_result[0][0]
+    free = book_result[0][1]
+
     cursor.execute("""SELECT book_id FROM holds
                    WHERE pr == ?""", (pr))
     book_id_2 = cursor.fetchall()
@@ -58,20 +63,26 @@ def take_book(connect, pr, title, author):
                    WHERE pr == ?""", (pr))
     active_takes = cursor.fetchall()
     if int(active_takes) < 5:
-        if int(free) > 0 or (book_id_1 in book_id_2):
+        if int(free) > 0 or (book_id in book_id_2):
             date = "d/m/y"
             cursor.execute("""UPDATE books
                         SET free = free - 1
                         WHERE title == ?, author == ?""", (title, author))
             cursor.execute("""INSERT INTO loans(pr, book_id, date)
-                           VAlUES (?, ?, ?)""", (pr, book_id_1, date))
+                           VAlUES (?, ?, ?)""", (pr, book_id, date))
     cursor.commit()
 
 def back_book(connect, pr, title, author):
     cursor = connect.cursor()
     cursor.execute("""SELECT free, id FROM books
                    WHERE title == ?, author == ?""", (title , author))
-    book_id = cursor.fetchall()
+    
+    book_result = cursor.fetchall()
+    if not book_result:
+        print("Книга не найдена")
+        return
+    book_id = book_result[0][0]
+
     cursor.execute("""DELETE FROM loans
                    WHERE pr == ?, book_id == ?""", (pr, book_id))
     cursor.execute("""UPDATE books
