@@ -68,7 +68,23 @@ def back_book(connect, pr, title, author):
                    WHERE title == ?, author == ?""", (title, author))
     cursor.commit()
 
+def get_taken_books(connect, pr):
+    cursor = connect.cursor()
+    cursor.execute("""SELECT b.title, b.author, l.date 
+                   FROM loans l 
+                   JOIN books b ON l.book_id = b.id 
+                   WHERE l.pr = ?""", (pr,))
+    books = cursor.fetchall()
+    return books
 
+def get_reserved_books(connect, pr):
+    cursor = connect.cursor()
+    cursor.execute("""SELECT b.title, b.author, h.date 
+                   FROM holds h 
+                   JOIN books b ON h.book_id = b.id 
+                   WHERE h.pr = ?""", (pr,))
+    books = cursor.fetchall()
+    return books
 
     
 
