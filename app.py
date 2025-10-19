@@ -94,6 +94,15 @@ elif to_do == 8:
     title = input("Введите название книги: ")
     author = input("Введите автора книги: ")
     service.back_book(connect, pr, title, author)
+    
+elif to_do == 9:
+    pr = input("Введите идентификатор читателя: ")
+    service.get_taken_books(connect, pr)
+
+elif to_do == 10:
+    pr = input("Введите идентификатор читателя: ")
+    service.get_reserved_books(connect, pr)
+
 
 else:
     print("Неверный номер запроса")
