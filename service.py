@@ -24,8 +24,16 @@ def remove_bron(connect, pr, title, author):
     cursor = connect.cursor()
     cursor.execute("""SELECT id FROM books
                       WHERE title == ?, author == ?""", (title , author))
-    book_id = cursor.fetchall()
+    
+    s = cursor.fetchall()
 
+    if not s: 
+        print("Книга не найдена")
+        return
+    
+    book_id = s[0][0] 
+    free = s[0][1]
+    
     cursor.execute("""DELETE FROM holds
                    WHERE pr == ?, book_id == ?""", (pr, book_id))
     cursor.execute("""UPDATE books
@@ -46,7 +54,7 @@ def take_book(connect, pr, title, author):
     cursor.execute("""SELECT count(book_id)
                    WHERE pr == ?""", (pr))
     active_takes = cursor.fetchall()
-    if int(active_takes) >= 5:
+    if int(active_takes) < 5:
         if int(free) > 0 or (book_id_1 in book_id_2):
             date = "d/m/y"
             cursor.execute("""UPDATE books
