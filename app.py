@@ -2,7 +2,7 @@ import db
 import repo
 import service
 
-connect = db.connect_db()
+connect = db.connect_db("library.bd")
 curs = connect.cursor()
 
 print("Добавить книгу: 1" \
@@ -24,7 +24,7 @@ import db
 import repo
 import service
 
-connect = db.connect_db()
+connect = db.connect_db("library.bd")
 curs = connect.cursor()
 
 print("Добавить книгу: 1\n"
