@@ -1,13 +1,11 @@
-
 def bron(connect, pr, title, author):
     cursor = connect.cursor()
     cursor.execute("""SELECT id, free FROM books
-                      WHERE title = ?, author = ?""", (title , author))
+                      WHERE title = ? and author = ?""", (title , author))
     s = cursor.fetchall()
     
     if not s:
-        print("Книга не найдена")
-        return
+        return "Книга не найдена"
     
     book_id = s[0][0] 
     free = s[0][1]     
@@ -17,42 +15,51 @@ def bron(connect, pr, title, author):
     cnt = cursor.fetchall()
 
     if int(free) > 0 and int(cnt) <= 5:
-        date = "d/m/y"
+        date = "19/10/25"
         cursor.execute("""INSERT INTO holds (pr, book_id, date)
                        VALUES (?, ?, ?)""", (pr, book_id, date))
         cursor.execute("""UPDATE books
                        SET free = free - 1
-                       WHERE title = ?, author = ?""", (title, author))
-    cursor.commit()
+                       WHERE title = ? and author = ?""", (title, author))
+        cursor.commit()
+        return "Книга забронирована"
+    return "Нельзя забронировать книгу"
         
+
 def remove_bron(connect, pr, title, author):
     cursor = connect.cursor()
     cursor.execute("""SELECT id FROM books
-                      WHERE title = ?, author = ?""", (title , author))
+                      WHERE title = ? and author = ?""", (title , author))
     
     s = cursor.fetchall()
-    if not s: 
-        print("Книга не найдена")
-        return
-    
-    book_id = s[0][0] 
+    if not s:
+        return "Книга не найдена"
+    book_id = s[0][0]
+
+    cursor.execute("""SELECT pr, id FROM holds
+                   WHERE pr = ? and id = ?""", (pr, book_id))
+    x = cursor.fetchall()
+    if not x:
+        return "У вас нет брони этой книги"
 
     cursor.execute("""DELETE FROM holds
-                   WHERE pr = ?, book_id = ?""", (pr, book_id))
+                   WHERE pr = ? and book_id = ?""", (pr, book_id))
     cursor.execute("""UPDATE books
                        SET free = free + 1
-                       WHERE title = ?, author = ?""", (title, author))
+                       WHERE title = ? and author = ?""", (title, author))
     cursor.commit()
+    return "Бронь снята"
+
 
 def take_book(connect, pr, title, author):
     cursor = connect.cursor()
     cursor.execute("""SELECT free, id FROM books
-                   WHERE title = ?, author = ?""", (title , author))
+                   WHERE title = ? and author = ?""", (title , author))
     
     book_result = cursor.fetchall()
     if not book_result:
-        print("Книга не найдена")
-        return
+        return "Книга не найдена"
+    
     book_id = book_result[0][0]
     free = book_result[0][1]
 
@@ -62,33 +69,41 @@ def take_book(connect, pr, title, author):
     cursor.execute("""SELECT count(book_id)
                    WHERE pr = ?""", (pr))
     active_takes = cursor.fetchall()
-    if int(active_takes) < 5:
+    if int(active_takes) <= 5:
         if int(free) > 0 or (book_id in book_id_2):
-            date = "d/m/y"
+            date = "13/10/25"
             cursor.execute("""UPDATE books
                         SET free = free - 1
-                        WHERE title = ?, author = ?""", (title, author))
+                        WHERE title = ? and author = ?""", (title, author))
             cursor.execute("""INSERT INTO loans(pr, book_id, date)
                            VAlUES (?, ?, ?)""", (pr, book_id, date))
-    cursor.commit()
+            cursor.commit()
+            return "Книга выдана"
+    return "Нельзя выдать книгу"
 
-def back_book(connect, pr, title, author):
+def return_book(connect, pr, title, author):
     cursor = connect.cursor()
-    cursor.execute("""SELECT free, id FROM books
-                   WHERE title = ?, author = ?""", (title , author))
+    cursor.execute("""SELECT id FROM books
+                   WHERE title = ? and author = ?""", (title , author))
     
-    book_result = cursor.fetchall()
-    if not book_result:
-        print("Книга не найдена")
-        return
-    book_id = book_result[0][0]
+    book_id = cursor.fetchall()
+    if not book_id:
+        return "Книга не найдена"
+    
+    cursor.execute("""SELECT pr, id FROM holds
+                   WHERE pr = ? and id = ?""", (pr, book_id))
+    x = cursor.fetchall()
+    if not x:
+        return "Вы не брали эту книгу"
 
     cursor.execute("""DELETE FROM loans
-                   WHERE pr = ?, book_id = ?""", (pr, book_id))
+                   WHERE pr = ? and book_id = ?""", (pr, book_id))
     cursor.execute("""UPDATE books
                    SET free = free + 1
-                   WHERE title = ?, author = ?""", (title, author))
+                   WHERE title = ? and author = ?""", (title, author))
     cursor.commit()
+    return "Книга возвращена"
+
 
 def get_taken_books(connect, pr):
     cursor = connect.cursor()
