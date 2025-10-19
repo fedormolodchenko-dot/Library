@@ -20,20 +20,83 @@ print("Добавить книгу: 1" \
 "Поиск книг: 13" \
 "" \
 "Что вы хотите сделать? Введите номер запроса: ")
-to_do= int(input())
+import db
+import repo
+import service
+
+connect = db.connect_db()
+curs = connect.cursor()
+
+print("Добавить книгу: 1\n"
+      "Удалить книгу: 2\n"
+      "Добавить читателя: 3\n"
+      "Удалить читателя: 4\n"
+      "Забронировать книгу: 5\n"
+      "Снять бронь: 6\n"
+      "Взять книгу: 7\n"
+      "Сдать книгу: 8\n"
+      "Список взятых читателем книг: 9\n"
+      "Список забронированных читателем книг: 10\n"
+      "Список просроченных книг: 11\n"
+      "Автоматический сброс брони: 12\n"
+      "Поиск книг: 13\n"
+      "\n"
+      "Что вы хотите сделать? Введите номер запроса: ")
+
+to_do = int(input())
+
 if to_do == 1:
-    title= input()
-    author = input()
-    genre = input()
-    want_n = input("Вы хотите добавить одну книгу? (введите yes/no) ")
+    title = input("Введите название книги: ")
+    author = input("Введите автора книги: ")
+    genre = input("Введите жанр книги: ")
+    want_n = input("Вы хотите добавить одну книгу? (введите yes/no): ")
     if want_n == "no":
-        n = int(input())
+        n = int(input("Введите количество книг: "))
     else:
         n = 1
-    
     repo.add_book(connect, title, author, genre, n)
 
+elif to_do == 2:
+    title = input("Введите название книги для удаления: ")
+    author = input("Введите автора книги для удаления: ")
+    repo.remove_book(connect, title, author)
 
+elif to_do == 3:
+    full_name = input("Введите ФИО читателя: ")
+    phone = input("Введите телефон читателя: ")
+    age = int(input("Введите возраст читателя: "))
+    repo.add_reader(connect, full_name, phone, age)
+
+elif to_do == 4:
+    pr = input("Введите идентификатор читателя для удаления: ")
+    repo.remove_reader(connect, pr)
+
+elif to_do == 5:
+    pr = input("Введите идентификатор читателя: ")
+    title = input("Введите название книги: ")
+    author = input("Введите автора книги: ")
+    service.bron(connect, pr, title, author)
+
+elif to_do == 6:
+    pr = input("Введите идентификатор читателя: ")
+    title = input("Введите название книги: ")
+    author = input("Введите автора книги: ")
+    service.remove_bron(connect, pr, title, author)
+
+elif to_do == 7:
+    pr = input("Введите идентификатор читателя: ")
+    title = input("Введите название книги: ")
+    author = input("Введите автора книги: ")
+    service.take_book(connect, pr, title, author)
+
+elif to_do == 8:
+    pr = input("Введите идентификатор читателя: ")
+    title = input("Введите название книги: ")
+    author = input("Введите автора книги: ")
+    service.back_book(connect, pr, title, author)
+
+else:
+    print("Неверный номер запроса")
 
 
 title= input()
