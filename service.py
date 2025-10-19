@@ -96,3 +96,8 @@ def get_overdue_books(connect):
     overdue_books = cursor.fetchall()
     return overdue_books
     
+def auto_remove_reservation(connect):
+    cursor = connect.cursor()
+    cursor.execute("""DELETE FROM holds 
+                   WHERE date(date, '+5 days') < date('now')""")
+    connect.commit()
