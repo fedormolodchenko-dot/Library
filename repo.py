@@ -1,6 +1,6 @@
 
 def add_book(connect, title, author, genre, n = 1):
-    cursor = connect.Cursor()
+    cursor = connect.cursor()
 
     cursor.execute("""SELECT free, total FROM books 
                    WHERE title == ?, author == ?""",(title, author))
