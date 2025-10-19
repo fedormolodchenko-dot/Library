@@ -17,7 +17,7 @@ def add_book(connect, title, author, genre, n = 1):
     cursor.commit()
 
 def remove_book(connect, title, author):
-    cursor = connect.Cursor()
+    cursor = connect.cursor()
     cursor.execute("""SELECT id FROM books
                    WHERE title == ?, author == ?""",(title, author))
     book_id = cursor.fetchall()
@@ -36,7 +36,7 @@ def remove_book(connect, title, author):
     cursor.commit()
 
 def add_reader(connect, full_name, phone, age):
-    cursor = connect.Cursor()
+    cursor = connect.cursor()
     name, surname = full_name.split()
     pr = name[0] + surname[0] + str(len(name)) + str(len(surname)) + phone[len(phone)- 4:]
     cursor.execute("""INSERT INTO readers (pr, full_name, phone, age)
@@ -44,7 +44,7 @@ def add_reader(connect, full_name, phone, age):
     cursor.commit()
 
 def remove_reader(connect, pr):
-    cursor = connect.Cursor()
+    cursor = connect.cursor()
     cursor.execute("""SELECT pr FROM loans""")
     loans = cursor.fetchall()
 
