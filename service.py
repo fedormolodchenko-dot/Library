@@ -4,8 +4,13 @@ def bron(connect, pr, title, author):
     cursor.execute("""SELECT id, free FROM books
                       WHERE title == ?, author == ?""", (title , author))
     s = cursor.fetchall()
-    book_id = s[0]
-    free = s[1]
+    
+    if not s:
+        print("Книга не найдена")
+        return
+    
+    book_id = s[0][0] 
+    free = s[0][1]     
 
     cursor.execute("""SELECT count(book_id) FROM holds
                    WHERE pr == ?""", (pr))
@@ -26,14 +31,12 @@ def remove_bron(connect, pr, title, author):
                       WHERE title == ?, author == ?""", (title , author))
     
     s = cursor.fetchall()
-
     if not s: 
         print("Книга не найдена")
         return
     
     book_id = s[0][0] 
-    free = s[0][1]
-    
+
     cursor.execute("""DELETE FROM holds
                    WHERE pr == ?, book_id == ?""", (pr, book_id))
     cursor.execute("""UPDATE books
