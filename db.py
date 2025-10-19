@@ -30,4 +30,4 @@ def create_table():
 create_table()
 
 def connect_db(path):
-    return sqlite3.connect()
+    return sqlite3.connect("library.db")
