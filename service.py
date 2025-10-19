@@ -101,3 +101,21 @@ def auto_remove_reservation(connect):
     cursor.execute("""DELETE FROM holds 
                    WHERE date(date, '+5 days') < date('now')""")
     connect.commit()
+
+def search_books(connect, title = None, author = None, genre = None):
+    cursor = connect.cursor()
+    quest = "SELECT title, author, genre, total, free FROM books WHERE 1=1"
+    paramet = []
+    if title:
+        quest += " AND LOWER(title) LIKE LOWER(?)"
+        paramet.append(f"%{title}%")
+    if author:
+        quest += " AND LOWER(author) LIKE LOWER(?)"
+        paramet.append(f"%{author}%")
+    if genre:
+        quest += " AND LOWER(genre) LIKE LOWER(?)"
+        paramet.append(f"%{genre}%")
+    
+    cursor.execute(quest, paramet)
+    books = cursor.fetchall()
+    return books
