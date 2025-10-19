@@ -109,6 +109,12 @@ elif to_do == 11:
 elif to_do == 12:
     service.auto_remove_reservation(connect)
 
+elif to_do == 13:
+    title = input("Введите название книги (или Enter для пропуска): ") or None
+    author = input("Введите автора книги (или Enter для пропуска): ") or None
+    genre = input("Введите жанр книги (или Enter для пропуска): ") or None
+    service.search_books(connect, title, author, genre)
+
 else:
     print("Неверный номер запроса")
 
