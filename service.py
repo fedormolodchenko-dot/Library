@@ -85,7 +85,14 @@ def get_reserved_books(connect, pr):
                    WHERE h.pr = ?""", (pr,))
     books = cursor.fetchall()
     return books
-
     
-
+def get_overdue_books(connect):
+    cursor = connect.cursor()
+    cursor.execute("""SELECT r.pr, r.full_name, b.title, b.author, l.date 
+                   FROM loans l 
+                   JOIN readers r ON l.pr = r.pr 
+                   JOIN books b ON l.book_id = b.id 
+                   WHERE date(l.date, '+14 days') < date('now')""")
+    overdue_books = cursor.fetchall()
+    return overdue_books
     
