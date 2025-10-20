@@ -3,7 +3,7 @@ import repo
 import service
 
 connect = db.connect_db("library.bd")
-curs = connect.cursor()
+
 
 to_do = int(input("Добавить книгу: 1\n"
       "Удалить книгу: 2\n"
