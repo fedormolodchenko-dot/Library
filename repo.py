@@ -18,27 +18,25 @@ def add_book(connect, title, author, genre, n = 1):
 
 def remove_book(connect, title, author):
     cursor = connect.cursor()
+    
     cursor.execute("""SELECT id FROM books
-                   WHERE title = ? and author = ?""",(title, author))
+                   WHERE title = ? and author = ? 
+                   AND id NOT IN (SELECT book_id FROM loans WHERE book_id = books.id)
+                   AND id NOT IN (SELECT book_id FROM holds WHERE book_id = books.id)""", 
+                   (title, author))
+    
     s = cursor.fetchone()
-    if not s:
-        return "Книга не найдена"
-    book_id = s[0]
-
-    cursor.execute("""SELECT book_id FROM loans
-                   WHERE book_id = ?""",(book_id,))
-    loans = cursor.fetchone()
-
-    cursor.execute("""SELECT book_id FROM holds
-                   WHERE book_id = ?""",(book_id,))
-    holds = cursor.fetchone()
-
-    if not loans and not holds:
-        cursor.execute("""DELETE FROM books
-                       WHERE id = ?""",(book_id,))
+    
+    if s:
+        cursor.execute("""DELETE FROM books WHERE id = ?""", (s[0],))
         connect.commit()
         return "Книга удалена"
-    return "Нельзя удалить книгу"
+    
+    cursor.execute("""SELECT id FROM books
+                   WHERE title = ? and author = ?""", (title, author))
+    if cursor.fetchone():
+        return "Нельзя удалить книгу"
+    return "Книга не найдена"
 
 
 def add_reader(connect, full_name, phone, age):
@@ -53,26 +51,24 @@ def add_reader(connect, full_name, phone, age):
 
 def remove_reader(connect, pr):
     cursor = connect.cursor()
+    
     cursor.execute("""SELECT pr FROM readers
-                   WHERE pr = ?""", (pr,))
-    s = cursor.fetchall()
-    if not s:
-        return "Читатель не найден"
+                   WHERE pr = ? 
+                   AND pr NOT IN (SELECT pr FROM loans WHERE pr = readers.pr)
+                   AND pr NOT IN (SELECT pr FROM holds WHERE pr = readers.pr)""", 
+                   (pr,))
     
-    cursor.execute("""SELECT pr FROM loans
-                   WHERE pr = ?""", (pr,))
-    loans = cursor.fetchall()
-
-    cursor.execute("""SELECT pr FROM holds
-                   WHERE pr = ?""", (pr,))
-    holds = cursor.fetchall()
+    s = cursor.fetchone()
     
-    if loans == [] and holds == []:
-        cursor.execute("""DELETE FROM readers 
-                       WHERE pr = ?""", (pr,))
+    if s:
+        cursor.execute("""DELETE FROM readers WHERE pr = ?""", (s[0],))
         connect.commit()
         return "Читатель удален"
-    return "Нельзя удалить читателя"
+    
+    cursor.execute("""SELECT pr FROM readers WHERE pr = ?""", (pr,))
+    if cursor.fetchone():
+        return "Нельзя удалить читателя"
+    return "Читатель не найден"
 
 
 
