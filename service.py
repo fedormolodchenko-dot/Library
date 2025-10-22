@@ -105,26 +105,26 @@ def take_book(connect, pr, title, author):
 
 def return_book(connect, pr, title, author):
     cursor = connect.cursor()
-    cursor.execute("""SELECT id FROM books
-                   WHERE title = ? and author = ?""", (title , author))
     
-    book_result = cursor.fetchone()
-    if not book_result:
+    cursor.execute("""SELECT b.id, l.pr 
+                   FROM books b
+                   LEFT JOIN loans l ON b.id = l.book_id AND l.pr = ?
+                   WHERE b.title = ? AND b.author = ?""", 
+                   (pr, title, author))
+    
+    result = cursor.fetchone()
+    
+    if not result:
         return "Книга не найдена"
     
-    book_id = book_result[0]
+    book_id, loan_pr = result
     
-    cursor.execute("""SELECT pr, book_id FROM loans
-                   WHERE pr = ? and book_id = ?""", (pr, book_id))
-    check_loan = cursor.fetchall()
-    if not check_loan:
+    if loan_pr is None:
         return "Вы не брали эту книгу"
 
-    cursor.execute("""DELETE FROM loans
-                   WHERE pr = ? and book_id = ?""", (pr, book_id))
-    cursor.execute("""UPDATE books
-                   SET free = free + 1
-                   WHERE id = ?""", (book_id,))
+    cursor.execute("DELETE FROM loans WHERE pr = ? AND book_id = ?", (pr, book_id))
+    cursor.execute("UPDATE books SET free = free + 1 WHERE id = ?", (book_id,))
+    
     connect.commit()
     return "Книга возвращена"
 
